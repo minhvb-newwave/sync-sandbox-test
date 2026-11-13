@@ -1,0 +1,66 @@
+# Testbed for tadhana/github-sync: same stage layout as the app projects, fake build/deploy jobs,
+# real outbound sync jobs pushing to the sandbox GitHub repo (SYNC_REPO=TEST). Nothing is deployed.
+
+include:
+  - project: tadhana/github-sync
+    ref: main   # switch to v1.0.0 once phase 3 passes
+    file: outbound.yml
+
+stages:
+  - code-review
+  - build-and-test
+  - deploy
+  - github-sync
+
+variables:
+  SYNC_REPO: TEST
+  GIT_DEPTH: "0"
+
+# Global defaults in the same legacy top-level form the app projects use. The sync jobs must NOT
+# inherit them: if they did, this before_script would fail the job and prove the leak.
+image: alpine:3.20
+before_script:
+  - echo "GLOBAL BEFORE_SCRIPT LEAKED"; exit 1
+
+.fake_job:
+  tags:
+    - docker
+  before_script: []
+
+test:
+  extends: .fake_job
+  stage: build-and-test
+  script:
+    - echo "fake test for $CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH =~ /^(release|hotfix)\//'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+
+deploy_develop:
+  extends: .fake_job
+  stage: deploy
+  script:
+    - echo "fake deploy to dev"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+deploy_staging:
+  extends: .fake_job
+  stage: deploy
+  script:
+    - echo "fake deploy to staging"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^(release|hotfix)\//'
+
+# Manual and blocking, like the real deploy_production. A commit containing the file
+# `fail-deploy` makes it fail, to prove sync_github_main does not run after a failed deploy.
+deploy_production:
+  extends: .fake_job
+  stage: deploy
+  script:
+    - if [ -f fail-deploy ]; then echo "simulated production deploy failure"; exit 1; fi
+    - echo "fake deploy to production"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      when: manual
