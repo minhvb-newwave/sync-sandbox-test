@@ -95,3 +95,4 @@ If you have run out of energy or time for your project, put a note at the top of
 Scenario 3 change (2026-11-13): newer develop commit for the late-pipeline test.
 Scenario 4 change (2026-11-13): GitLab commit pushed after a GitHub-only commit.
 Hotfix v0.1.1 change (2026-11-13).
+Scenario 16 staging lease (2026-11-13).
