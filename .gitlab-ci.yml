@@ -3,7 +3,7 @@
 
 include:
   - project: tadhana/github-sync
-    ref: feat/outbound-sync   # switch to v1.0.0 once phase 3 passes
+    ref: main   # switch to v1.0.0 once phase 3 passes
     file: outbound.yml
 
 stages:
