@@ -96,3 +96,4 @@ Scenario 3 change (2026-11-13): newer develop commit for the late-pipeline test.
 Scenario 4 change (2026-11-13): GitLab commit pushed after a GitHub-only commit.
 Release v0.2.0 change (2026-11-13).
 Release v0.2.0 QA fix (2026-11-13).
+Scenario 16 staging fast-forward (2026-11-13).
