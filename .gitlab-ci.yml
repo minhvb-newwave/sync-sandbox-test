@@ -3,7 +3,7 @@
 
 include:
   - project: tadhana/github-sync
-    ref: main   # switch to v1.0.0 once phase 3 passes
+    ref: v1.0.0
     file: outbound.yml
 
 stages:
@@ -36,6 +36,18 @@ test:
     - if: '$CI_COMMIT_BRANCH == "develop"'
     - if: '$CI_COMMIT_BRANCH =~ /^(release|hotfix)\//'
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    # Like the app projects: MR pipelines run (step 2 of the inbound import starts one).
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# Would run on any push of an imported customer branch; it must never appear for github/pr-<n>,
+# because the inbound import pushes with -o ci.skip.
+imported_branch_canary:
+  extends: .fake_job
+  stage: code-review
+  script:
+    - echo "a pipeline ran on the imported branch $CI_COMMIT_BRANCH without review"; exit 1
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^github\//'
 
 deploy_develop:
   extends: .fake_job
