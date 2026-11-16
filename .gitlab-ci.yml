@@ -1,5 +1,6 @@
 # Testbed for tadhana/github-sync: same stage layout as the app projects, fake build/deploy jobs,
 # real outbound sync jobs pushing to the sandbox GitHub repo (SYNC_REPO=TEST). Nothing is deployed.
+# fork PR test
 
 include:
   - project: tadhana/github-sync
